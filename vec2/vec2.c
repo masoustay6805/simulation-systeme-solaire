@@ -13,7 +13,9 @@ vec2 vec2_create(double x_, double y_) {
 
 /// Create a zero 2d vector.
 /// @return The newly created zero vector.
-vec2 vec2_create_zero() { vec2_create(0.0, 0.0); }
+vec2 vec2_create_zero() {
+    return vec2_create(0.0, 0.0);
+}
 
 /// Add two vectors.
 /// @param lhs The left operand.
