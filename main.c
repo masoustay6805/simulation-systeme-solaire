@@ -19,13 +19,18 @@ int main()
         return EXIT_FAILURE;
     }
 
-    // TODO : create your system
+    time_t start_time;
+    time(&start_time);
+    system_t system = create_system(0);
 
     while (true)
     {
         gfx_present(ctxt);
-        // TODO : draw the current state of your system
-        // TODO : update your system
+        show_system(ctxt, &system);
+        time_t current_time;
+        time(&current_time);
+        double ellasped_time_milliseconds = 1000 * (current_time - start_time);
+        // update_system(&system, ellasped_time_milliseconds);
         gfx_clear(ctxt, COLOR_BLACK);
         if (gfx_keypressed() == SDLK_ESCAPE)
         {
@@ -33,7 +38,7 @@ int main()
         }
     }
 
-    // TODO : Free your system
+    free_system(&system);
     gfx_destroy(ctxt);
     return EXIT_SUCCESS;
 }
