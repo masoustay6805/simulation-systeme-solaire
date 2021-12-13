@@ -96,6 +96,7 @@ coordinates vec2_to_coordinates(vec2 v, uint32_t width, uint32_t height) {
             .column = (uint32_t)round((v.x + 1.0) * (width - 1) / 2.0)};
 }
 
+
 /// Print a vector in the standard output.
 /// @param v The vector.
 void vec2_print(vec2 v)

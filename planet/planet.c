@@ -10,22 +10,25 @@
 #define SUN_Y 0
 
 #define MERCURY_M 3.3022e23
-#define MERCURY_X 0
-#define MERCURY_Y 0
+#define MERCURY_X 0.1
+#define MERCURY_Y 0    
 
 #define VENUS_M 4.8685e24
-#define VENUS_X 0
+#define VENUS_X 0.2
 #define VENUS_Y 0
 
 #define EARTH_M 3.5838e25
-#define EARTH_X 0
+#define EARTH_X 0.3
 #define EARTH_Y 0
 
 #define MARS_M 6.4185e23
-#define MARS_X 0
+#define MARS_X 0.4
 #define MARS_Y 0
 
 #define NB_PLANETS 4
+
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 1000
 
 planet_t create_planet(double mass, vec2 pos) {
     planet_t planet = {
@@ -51,8 +54,16 @@ system_t create_system(double delta_t) {
 void show_system(struct gfx_context_t *ctxt, system_t *system) {
     for (int32_t i = -1; i<NB_PLANETS; i++) {
         planet_t planet = i == -1 ? system->star : system->planets[i];
-        coordinates coords = vec2_to_coordinates(planet.pos, 0, 0);
-        draw_full_circle(ctxt, coords.column, coords.row, 10, COLOR_WHITE);
+        if(i==-1){
+            printf("\nposition mercure = %lf", planet.pos.x);
+            printf("\nposition mercure row= %lf", planet.pos.y);
+        }
+        coordinates coords = vec2_to_coordinates(planet.pos, SCREEN_WIDTH, SCREEN_HEIGHT);
+        if(i==-1){
+            printf("\ncoordonnées mercure = %d", coords.column);
+            printf("\ncoordonnées mercure row= %d", coords.row);
+        }
+        draw_full_circle(ctxt, coords.column, coords.row, 10, COLOR_YELLOW);
     }
 }
 
