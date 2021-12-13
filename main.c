@@ -25,8 +25,9 @@ int main()
 
     while (true)
     {
+        
         gfx_present(ctxt);
-        show_system(ctxt, &system);
+        coordinates c_soleil=vec2_to_coordinates(vec2_create_zero(), SCREEN_WIDTH, SCREEN_HEIGHT);
         time_t current_time;
         time(&current_time);
         double ellasped_time_milliseconds = 1000 * (current_time - start_time);
@@ -36,6 +37,7 @@ int main()
         {
             break;
         }
+        draw_full_circle(ctxt, c_soleil.column, c_soleil.row, 10, COLOR_BLUE);
     }
 
     free_system(&system);

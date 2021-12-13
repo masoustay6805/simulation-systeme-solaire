@@ -51,7 +51,7 @@ system_t create_system(double delta_t) {
 void show_system(struct gfx_context_t *ctxt, system_t *system) {
     for (int32_t i = -1; i<NB_PLANETS; i++) {
         planet_t planet = i == -1 ? system->star : system->planets[i];
-        coordinates coords = vec2_to_coordinates(planet.pos, 1000, 1000);
+        coordinates coords = vec2_to_coordinates(planet.pos, 0, 0);
         draw_full_circle(ctxt, coords.column, coords.row, 10, COLOR_WHITE);
     }
 }
