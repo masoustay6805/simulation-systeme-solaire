@@ -58,15 +58,7 @@ system_t create_system(double delta_t) {
 void show_system(struct gfx_context_t *ctxt, system_t *system) {
     for (int32_t i = -1; i<NB_PLANETS; i++) {
         planet_t planet = i == -1 ? system->star : system->planets[i];
-        if(i==-1){
-            printf("\nposition mercure = %lf", planet.pos.x);
-            printf("\nposition mercure row= %lf", planet.pos.y);
-        }
         coordinates coords = vec2_to_coordinates(planet.pos, SCREEN_WIDTH, SCREEN_HEIGHT);
-        if(i==-1){
-            printf("\ncoordonnées mercure = %d", coords.column);
-            printf("\ncoordonnées mercure row= %d", coords.row);
-        }
         draw_full_circle(ctxt, coords.column, coords.row, planet.grandeur, planet.color);
     }
 }
