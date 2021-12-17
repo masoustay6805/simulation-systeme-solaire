@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "../gfx/gfx.h"
 #include <inttypes.h>
+#include <stdio.h>
 
 #define G 6.67e-11
 
@@ -64,7 +65,7 @@ void show_system(struct gfx_context_t *ctxt, system_t *system) {
 }
 
 void update_system(system_t *system, double delta_t) {
-
+    printf("%lf\n", delta_t);
 }
 
 void free_system(system_t *system) {
