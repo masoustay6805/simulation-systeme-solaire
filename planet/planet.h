@@ -16,7 +16,7 @@ typedef struct _planet
 typedef struct _system
 {
     planet_t star;       // ex. The sun
-    uint32_t nb_planets; // The number of orbiting planets
+    int32_t nb_planets; // The number of orbiting planets
     planet_t *planets;   // An array of orbiting planets
 } system_t;
 

@@ -12,7 +12,6 @@
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 1000
-#define FPS 10
 
 int main()
 {
@@ -44,7 +43,6 @@ int main()
             break;
         }
         show_system(ctxt, &system);
-        usleep(1000000 / FPS);
     }
 
     free_system(&system);

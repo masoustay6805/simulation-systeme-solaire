@@ -4,6 +4,7 @@
 #include "../gfx/gfx.h"
 #include <inttypes.h>
 #include <stdio.h>
+#include <math.h>
 
 #define G 6.67e-11
 
@@ -65,7 +66,16 @@ void show_system(struct gfx_context_t *ctxt, system_t *system) {
 }
 
 void update_system(system_t *system, double delta_t) {
-    printf("%lf\n", delta_t);
+    for (int32_t i = -1; i < system->nb_planets; i++) {
+        for (int32_t j = -1; j < system->nb_planets; j++) {
+            if (i != j) {
+                planet_t planet1 = i == -1 ? system->star : system->planets[i];
+                planet_t planet2 = j == -1 ? system->star : system->planets[j];
+                double fp1p2 = G * (planet1.mass * planet2.mass) / pow(vec2_norm(vec2_sub(planet1.pos, planet2.pos)), 3);
+                printf("%lf\n", fp1p2);
+            }
+        }
+    }
 }
 
 void free_system(system_t *system) {
