@@ -13,9 +13,10 @@
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 1000
 
+#define DELTA_T 12000
+
 int main()
 {
-    srand(time(NULL));
     struct gfx_context_t *ctxt =
         gfx_create("Planetary system", SCREEN_WIDTH, SCREEN_HEIGHT);
     if (!ctxt)
@@ -24,19 +25,13 @@ int main()
         return EXIT_FAILURE;
     }
 
-    time_t last_update_time;
-    time(&last_update_time);
-    system_t system = create_system(0);
+    system_t system = create_system(DELTA_T);
 
     while (true)
     {
         
         gfx_present(ctxt);
-        time_t current_time;
-        time(&current_time);
-        double ellasped_time_milliseconds = 1000 * (current_time - last_update_time);
-        last_update_time = current_time;
-        update_system(&system, ellasped_time_milliseconds);
+        update_system(&system, DELTA_T);
         gfx_clear(ctxt, COLOR_BLACK);
         if (gfx_keypressed() == SDLK_ESCAPE)
         {

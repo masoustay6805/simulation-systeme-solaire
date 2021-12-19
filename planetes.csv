@@ -1,5 +1,5 @@
 Name;Mass;Semi major axis;Eccentricity;Radius;Color
-Sun;1.989e30;0;0;10;0x00FFFF00
+Sun;1.989e30;0;0;30;0x00FFFF00
 Mercury;3.301e23;57.909e9;0.2056;4;0x00E98B41
 Venus;4.867e24;108.209e9;0.0067;7;0x001AA89A
 Earth;5.972e24;149.596e9;0.0167;3;0x00669EBF
