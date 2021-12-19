@@ -7,6 +7,13 @@
 
 #define DELTA_T 12000
 
+// TODO Refactoring
+// TODO Add comments
+// TODO Fix DELTA_T
+// TODO Do report
+// TODO Update planetes data in planetes.csv (size, color, ...)
+// TODO Add more planetes
+
 int main()
 {
     struct gfx_context_t *ctxt =
