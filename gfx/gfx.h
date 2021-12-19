@@ -19,6 +19,9 @@
 #define COLOR_WHITE 0x00FFFFFF
 #define COLOR_YELLOW 0x00FFFF00
 
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 1000
+
 struct gfx_context_t
 {
     SDL_Window *window;

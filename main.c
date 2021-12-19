@@ -4,14 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
-
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 1000
 
 #define DELTA_T 12000
 
