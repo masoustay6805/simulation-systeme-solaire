@@ -5,13 +5,14 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
+#include <string.h>
 
 #define G 6.67e-11
 
 #define SUN_M 1.989e30
 #define SUN_X 0
 #define SUN_Y 0
-
 
 #define MERCURY_M 3.3022e23
 #define MERCURY_X 0.2
@@ -29,53 +30,107 @@
 #define MARS_X 0.8
 #define MARS_Y 0
 
-#define NB_PLANETS 4
-
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 1000
 
-planet_t create_planet(double mass, vec2 pos, int color, int grandeur) {
+#define PLANETES_CSV_PATH "./planetes.csv"
+#define PLANETES_CSV_HEADERS true
+#define PLANETES_CSV_SEPARATOR ";"
+#define PLANETES_CSV_ROW_MAX_LENGTH 1024
+
+planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
     planet_t planet = {
-      .mass = mass,
-      .color = color,
-      .grandeur = grandeur,
-      .pos = pos
+        .mass = mass,
+        .color = color,
+        .radius = radius,
+        .semi_major_axis = semi_major_axis,
+        .eccentricity = eccentricity,
     };
+    if (is_star) {
+        planet.prec_pos = planet.pos = vec2_create_zero();
+    } else {
+        planet.prec_pos = planet.pos = vec2_create(semi_major_axis * (1 - eccentricity), 0);
+    }
     return planet;
 }
 
 system_t create_system(double delta_t) {
+    FILE *stream = fopen(PLANETES_CSV_PATH, "r");
+    if (stream == NULL) {
+        printf("%s not found !", PLANETES_CSV_PATH);
+        exit(EXIT_FAILURE);
+    }
+    char line[PLANETES_CSV_ROW_MAX_LENGTH];
+    // Count csv lines
+    int32_t csv_nb_lines = 0;
+    while (fgets(line, PLANETES_CSV_ROW_MAX_LENGTH, stream)) {
+        csv_nb_lines++;
+    }
+    // Create system
+    int32_t nb_planetes = PLANETES_CSV_HEADERS ? csv_nb_lines - 2 : csv_nb_lines - 1;
     system_t system = {
-            .planets = malloc(sizeof(planet_t) * NB_PLANETS),
-            .nb_planets = NB_PLANETS
+            .planets = malloc(sizeof(planet_t) * nb_planetes),
+            .nb_planets = nb_planetes
     };
-    system.star = create_planet(SUN_M, vec2_create(SUN_X, SUN_Y), COLOR_YELLOW, 60);
-    system.planets[0] = create_planet(MERCURY_M, vec2_create(MERCURY_X, MERCURY_Y), COLOR_GREEN, 20);
-    system.planets[1] = create_planet(VENUS_M, vec2_create(VENUS_X, VENUS_Y), COLOR_WHITE, 40);
-    system.planets[2] = create_planet(EARTH_M, vec2_create(EARTH_X, EARTH_Y), COLOR_BLUE, 30);
-    system.planets[3] = create_planet(MARS_M, vec2_create(MARS_X, MARS_Y), COLOR_RED, 40);
+    rewind(stream);
+    // Read csv line per line
+    int32_t line_index = PLANETES_CSV_HEADERS ? -1 : 0;
+    while (fgets(line, PLANETES_CSV_ROW_MAX_LENGTH, stream) && line_index - 1 < nb_planetes) {
+        // If line isn't headers
+        if (line_index > -1) {
+            double mass = 0, radius = 0, semi_major_axis = 0, eccentricity = 0;
+            int color = 0, field_index = 0;
+            // Read each fields
+            for (char *token = strtok(line, PLANETES_CSV_SEPARATOR); token != NULL; token = strtok(NULL, PLANETES_CSV_SEPARATOR), field_index++) {
+                switch (field_index) {
+                    case 1:
+                        mass = atof(token);
+                        break;
+                    case 2:
+                        semi_major_axis = atof(token);
+                        break;
+                    case 3:
+                        eccentricity = atof(token);
+                        break;
+                    case 4:
+                        radius = atof(token);
+                        break;
+                    case 5:
+                        color = (int32_t)strtol(token, NULL, 0);
+                        break;
+                }
+            }
+            // Create planet (or star)
+            if (line_index == 0) {
+                system.star = create_planet(mass, color, radius, semi_major_axis, eccentricity, true);
+            } else {
+                system.planets[line_index - 1] = create_planet(mass, color, radius, semi_major_axis, eccentricity, false);
+            }
+        }
+        line_index++;
+    }
+    fclose(stream);
     return system;
 }
 
 void show_system(struct gfx_context_t *ctxt, system_t *system) {
-    for (int32_t i = -1; i<NB_PLANETS; i++) {
-        planet_t planet = i == -1 ? system->star : system->planets[i];
-        coordinates coords = vec2_to_coordinates(planet.pos, SCREEN_WIDTH, SCREEN_HEIGHT);
-        draw_full_circle(ctxt, coords.column, coords.row, planet.grandeur, planet.color);
+    double maximum_radius = 0;
+    double margin = 0.1;
+    for (int32_t i = 0; i < system->nb_planets; i++) {
+        if (system->planets[i].semi_major_axis > maximum_radius) {
+            maximum_radius = system->planets[i].semi_major_axis;
+        }
+    }
+    maximum_radius *= (1 + margin);
+    for (int32_t i = -1; i < system->nb_planets; i++) {
+            planet_t planet = i == -1 ? system->star : system->planets[i];
+            coordinates coords = vec2_to_coordinates(vec2_mul(1.0 / maximum_radius, planet.pos), SCREEN_WIDTH, SCREEN_HEIGHT);
+            draw_full_circle(ctxt, coords.column, coords.row, planet.radius, planet.color);
     }
 }
 
 void update_system(system_t *system, double delta_t) {
-    for (int32_t i = -1; i < system->nb_planets; i++) {
-        for (int32_t j = -1; j < system->nb_planets; j++) {
-            if (i != j) {
-                planet_t planet1 = i == -1 ? system->star : system->planets[i];
-                planet_t planet2 = j == -1 ? system->star : system->planets[j];
-                double fp1p2 = G * (planet1.mass * planet2.mass) / pow(vec2_norm(vec2_sub(planet1.pos, planet2.pos)), 3);
-                printf("%lf\n", fp1p2);
-            }
-        }
-    }
+
 }
 
 void free_system(system_t *system) {

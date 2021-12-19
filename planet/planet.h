@@ -7,8 +7,10 @@
 typedef struct _planet
 {
     double mass;
-    int color;
-    int grandeur;
+    int32_t color;
+    double radius;
+    double semi_major_axis;
+    double eccentricity;
     vec2 pos;      // x(t)
     vec2 prec_pos; // x(t - dt)
 } planet_t;
@@ -22,7 +24,7 @@ typedef struct _system
 
 // Those function are not mandatory to implement,
 // it's rather a hint of what you should have.
-planet_t create_planet(double mass, vec2 pos, int color, int grandeur);
+planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star);
 system_t create_system(double delta_t);
 void show_system(struct gfx_context_t *ctxt, system_t *system);
 void update_system(system_t *system, double delta_t);
