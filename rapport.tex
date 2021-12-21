@@ -130,9 +130,18 @@
     
     \subsection{Réalisation de la simulation d'un système planétaire}\label{subsec:réalisation-de-la-simulation-d'un-système-planétaire}
 
+    \subsubsection{Calcul de la vélocité d'une planète}
+    
+    \subsubsection{Calcul de l'accélération d'une planète}
+    
+    \subsubsection{Calcul de la position initial d'une planète}
+    
+    \subsubsection{Mise à jour de la position d'une planète}
+
     \subsubsection{Création d'une étoile(dans notre cas: le soleil)}
 
-    Le soleil sera représenté comme une planète donc aura la structure d'une planète mais son comportement sera différentes des autres planètes. Pour ce faire, on a tout d'abord défini la structure d'une planète:
+    Le soleil sera représenté comme une planète donc aura la structure d'une planète mais son comportement sera différentes des autres planètes.
+    Pour ce faire, on a tout d'abord défini la structure d'une planète:
 
     \begin{lstlisting}[language=c,label={lst:lstlisting}]
         typedef struct _planet
@@ -182,21 +191,23 @@
             \hline\hline
             Sun & 1.989e30 & 0 & 0 & 8 & 0x00FFFF00 \\
             \hline
-            Mercury & 3.285e23 & 57.909e9 & 0.2056 & 0.5 & 0x00E98B41 \\
+            Mercury & 3.285e23 & 57.909e9 & 0.2056 & 0.5 & 0x0096764B \\
             \hline
-            Venus & 4.867e24 & 108.209e9 & 0.0067 & 2 & 0x001AA89A \\
+            Venus & 4.867e24 & 108.209e9 & 0.0067 & 2 & 0x00BC611C \\
             \hline
-            Earth & 5.972e24 & 149.596e9 & 0.0167 & 1 & 0x00669EBF \\
+            Earth & 5.972e24 & 149.596e9 & 0.0167 & 1 & 0x003A57D0 \\
             \hline
-            Mars & 6.417e23 & 227.923e9 & 0.0935 & 1.5 & 0x00E26642 \\
+            Mars & 6.417e23 & 227.923e9 & 0.0935 & 1.5 & 0x00B9351A \\
             \hline
-            Jupiter & 1.989e30 & 378.570e9 & 0.0489 & 2.5 & 0x00F5F5DC \\
+            Jupiter & 1.989e30 & 378.570e9 & 0.0489 & 2.5 & 0x00C27841 \\
             \hline
-            Saturn & 568.32e27 & 1434e9 & 0.0565 & 2.25 & 0x00FFF2CC \\
+            Saturn & 568.32e27 & 1434e9 & 0.0565 & 2.25 & 0x00A3946B \\
             \hline
         \end{tabular}
         \captionof{table}{Données~-~\emph{planetes.csv}}\label{fig:figure}
     \end{figure}
 
     Pour créer chaque planète à partir de ce tableau, on a créer une fonction qui permettra de récupérer chaque élément du tableau et l'attribuer dans le bon champs de la planète.
+
+    \subsubsection{Lecture d'un fichier CSV}
 \end{document}
