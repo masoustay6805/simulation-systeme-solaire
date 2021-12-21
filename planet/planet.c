@@ -47,18 +47,18 @@ static vec2 compute_next_position(system_t *system, planet_t planet, int32_t pla
 }
 
 planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
-    planet_t planet = {
+    planet_t planet = { //attribution de tous les paramètres
         .mass = mass,
         .color = color,
         .radius = radius,
         .semi_major_axis = semi_major_axis,
         .eccentricity = eccentricity,
     };
-    if (is_star) {
+    if (is_star) { //Si c'est une étoile on le place au milieu donc vecteur 0
         planet.prec_pos = planet.pos = vec2_create_zero();
-    } else {
+    } else { //Sinon on le place par rapport à sa distance au soleil(étoile) et son excentricité
         planet.prec_pos = planet.pos = vec2_create(semi_major_axis * (1 - eccentricity), 0);
-    }
+    } //La planète est aligné horizontalement au soleil
     return planet;
 }
 

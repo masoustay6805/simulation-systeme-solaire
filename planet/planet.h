@@ -6,11 +6,11 @@
 
 typedef struct _planet
 {
-    double mass;
-    int32_t color;
-    double radius;
-    double semi_major_axis;
-    double eccentricity;
+    double mass; //masse de la planète
+    int32_t color; //couleur sur la simulation
+    double radius; //Grandeur de la planète 
+    double semi_major_axis; //Distance par rapport au soleil
+    double eccentricity; //excentricité
     vec2 pos;      // x(t)
     vec2 prec_pos; // x(t - dt)
 } planet_t;
