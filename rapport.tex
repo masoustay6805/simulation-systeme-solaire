@@ -1,0 +1,204 @@
+\newif\ifCOR
+%\CORtrue
+
+\newif\ifIncludesEmbedded
+\IncludesEmbeddedtrue
+
+% Preamble
+\documentclass[a4paper,10pt]{article}
+
+% Packages
+\usepackage[francais]{babel} % Typographie
+\usepackage[T1]{fontenc}     % Saisie en
+\usepackage[utf8]{inputenc} % français
+\usepackage{arev}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+% Réglages généraux
+\usepackage[left=3.0cm, right=2.3cm, top=3cm, bottom=2.5cm]{geometry} % taille de la feuille
+\usepackage{fancyhdr} % Titre courant
+\usepackage{setspace} % Interligne
+\usepackage{lscape}   % Mode paysage
+\usepackage{multicol}  % Plusieurs colonnes
+\usepackage{placeins}
+\usepackage{caption}
+
+% Packages pour les tableaux
+\usepackage{array}     % Outils supplémentaires
+\usepackage{multirow}  % Colonnes multiples
+\usepackage{tabularx}  % Largeur totale donnée
+\usepackage{longtable} % sur plusieurs pages
+\usepackage{fancybox}
+
+% paquets mathématiques
+\usepackage{amsmath, amssymb, mathrsfs, theorem}
+\usepackage{wasysym} % symboles exotiques : \smiley...
+
+\usepackage{lastpage} % pour avoir \pageref{LastPage} : le nombre total de pages du doc
+\usepackage{verbatim} % for \begin{comment}
+\usepackage{fancyvrb}
+
+% Color scheme for listings
+\usepackage{textcomp}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+
+% Listings configuration
+\usepackage{listings}
+\lstset{
+    tabsize=4,
+    rulecolor=,
+    language=python,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={1.5\baselineskip},
+    columns=fixed,
+    numbers=left,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=shadowbox,
+    rulesepcolor=\color{black},
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color{red},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+    literate={á}{{\'a}}1 {ã}{{\~a}}1 {é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1,
+}
+
+% Other
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
+\graphicspath{{../images/}}
+\hypersetup{colorlinks=false}
+\hypersetup{pdfauthor=STAHLI Jules, pdfkeywords=stage}
+\hypersetup{pdfstartpage=1}
+\hypersetup{pdfpagemode=None} %FullScreen, None
+\hypersetup{pdfpagelayout=SinglePage} %SinglePage, OneColumn, TwoColumnLeft, TwoColumnRight
+\usepackage{csvsimple} % Csv to table
+\usepackage{booktabs}
+
+\hypersetup{pdfstartview=Fit} %Fit, FitH, FitV, FitB, FitBH, FitBV
+
+% Commands
+\newcommand{\doctitle}{Rapport}
+\newcommand{\docsubtitle}{Simulation système solaire}
+\newcommand{\docauthor}{David Rajohnson, Jules Stähli}
+\newcommand{\docversion}{v2.0}
+\newcommand{\filename}{rapport.tex}
+\newcommand{\docdate}{21 décembre 2021}
+
+% Document info
+\title{\doctitle}
+\author{\docauthor}
+\date{\docdate}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\docauthor}
+\lhead{\doctitle~-~\docsubtitle}
+\rfoot{Page \thepage~sur~\pageref{LastPage}}
+\lfoot{\docdate~-~\docversion}
+
+\setlength\parindent{0pt} %noindent for all the document
+
+% Document
+\begin{document}
+    \begin{center}
+    {\huge \doctitle~-~\docsubtitle}\newline
+    \end{center}
+
+    \tableofcontents
+
+    \newpage
+
+    \section{Introduction}
+
+    Pour réaliser une simulation d'un système planétaire, plusieurs facteurs sont à prendre en compte.
+    Puisque dans notre univers, tous les corps sont soumis à des forces.
+    Nous allons donc utiliser pour cela les trois lois de Newton:
+
+    \begin{enumerate}
+        \item Si un corps est immobile (ou en mouvement rectiligne uniforme), alors la somme des forces qu’il subit, appelée force résultante, est nulle. ($\vec{F} = 0$).
+        \item La force résultante subit par un corps est égale à la masse de ce dernier multipliée par son accélération. ($\vec{F} = m * a$).
+        \item Si un corps A subit une force de la part d’un corps B, alors le corps B subit une force de réaction de sens opposé et de même intensité ($\vec{F}_{b\to{a}} = -\vec{F}_{a\to{b}}$).
+    \end{enumerate}
+    
+    \subsection{Réalisation de la simulation d'un système planétaire}\label{subsec:réalisation-de-la-simulation-d'un-système-planétaire}
+
+    \subsubsection{Création d'une étoile(dans notre cas: le soleil)}
+
+    Le soleil sera représenté comme une planète donc aura la structure d'une planète mais son comportement sera différentes des autres planètes. Pour ce faire, on a tout d'abord défini la structure d'une planète:
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting}]
+        typedef struct _planet
+        {
+            double mass; //masse de la planète
+            int32_t color; //couleur sur la simulation
+            double radius; //Grandeur de la planète
+            double semi_major_axis; //Distance par rapport au soleil
+            double eccentricity; //excentricité
+            vec2 pos;      // x(t)
+            vec2 prec_pos; // x(t - dt)
+        } planet_t;
+    \end{lstlisting}
+
+    Comme convenu, pour la création de notre étoile nous avons donc eu besoin d'implémenter une fonction qui permet de créer les planètes.
+    Cette fonction contient également un champ qui permettra de préciser si cette planète créée est une étoile(\texttt{champ: is\char`_star}):
+    
+    \begin{lstlisting}[language=c,label={lst:lstlisting2}]
+        planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
+        planet_t planet = { //attribution de tous les paramètres
+            .mass = mass,
+            .color = color,
+            .radius = radius,
+            .semi_major_axis = semi_major_axis,
+            .eccentricity = eccentricity,
+        };
+
+        if (is_star) { //Si c'est une étoile on le place au milieu donc vecteur 0
+            planet.prec_pos = planet.pos = vec2_create_zero();
+        } else { //Sinon on la place par rapport à sa distance au soleil(étoile) et son excentricité
+            planet.prec_pos = planet.pos = vec2_create(semi_major_axis * (1 - eccentricity), 0);
+        } //La planète est aligné horizontalement au soleil
+        return planet;
+    }
+    \end{lstlisting}
+    
+    \subsubsection{Ajout de planètes autour de étoile(Soleil}
+
+    Ici on a déjà la base pour créer chaque planète, donc on désire en créer chaque planète autour de l'étoile.
+    Pour cela nous avons décidé de créer les planètes à partir d'un fichier \emph{.csv} pour ne pas avoir à modifier tout le code à chaque création de planètes.
+    Notre fichier \emph{.csv} est composé comme ci-dessous:
+
+    \begin{figure}[H]
+        \begin{tabular}{| l | l | l | l | l | l |}
+            \hline
+            Name & Mass & Semi major axis & Eccentricity & Radius & Color \\
+            \hline\hline
+            Sun & 1.989e30 & 0 & 0 & 8 & 0x00FFFF00 \\
+            \hline
+            Mercury & 3.285e23 & 57.909e9 & 0.2056 & 0.5 & 0x00E98B41 \\
+            \hline
+            Venus & 4.867e24 & 108.209e9 & 0.0067 & 2 & 0x001AA89A \\
+            \hline
+            Earth & 5.972e24 & 149.596e9 & 0.0167 & 1 & 0x00669EBF \\
+            \hline
+            Mars & 6.417e23 & 227.923e9 & 0.0935 & 1.5 & 0x00E26642 \\
+            \hline
+            Jupiter & 1.989e30 & 378.570e9 & 0.0489 & 2.5 & 0x00F5F5DC \\
+            \hline
+            Saturn & 568.32e27 & 1434e9 & 0.0565 & 2.25 & 0x00FFF2CC \\
+            \hline
+        \end{tabular}
+        \captionof{table}{Données}
+    \end{figure}
+
+    Pour créer chaque planète à partir de ce tableau, on a créer une fonction qui permettra de récupérer chaque élément du tableau et l'attribuer dans le bon champs de la planète.
+\end{document}
