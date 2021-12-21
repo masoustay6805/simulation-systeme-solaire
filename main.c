@@ -5,14 +5,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define DELTA_T 12000
+#define DELTA_T 15000 // Not working when dynamic
 
 // TODO Refactoring
 // TODO Add comments
-// TODO Fix DELTA_T
 // TODO Do report
-// TODO Update planetes data in planetes.csv (size, color, ...)
-// TODO Add more planetes
 
 int main()
 {
