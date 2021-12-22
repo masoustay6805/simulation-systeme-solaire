@@ -57,6 +57,7 @@ dkms.conf
 .idea
 
 # Latex
+out
 *.aux
 *.lof
 *.log
