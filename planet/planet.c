@@ -15,14 +15,14 @@
 #define PLANETES_CSV_SEPARATOR ";"
 #define PLANETES_CSV_ROW_MAX_LENGTH 1024
 
-static vec2 compute_velocity(system_t *system, planet_t planet) {
+vec2 compute_velocity(system_t *system, planet_t planet) {
     return vec2_mul(
             sqrt((G * system->star.mass * (1 + planet.eccentricity)) / (planet.semi_major_axis * (1 - planet.eccentricity))),
             vec2_normalize(vec2_create(-planet.pos.y, -planet.pos.x))
             );
 }
 
-static vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
+vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
     vec2 f_res = vec2_create_zero();
     for (int32_t i = -1; i < system->nb_planets; i++) {
         if (i != planet_index) {
@@ -35,13 +35,13 @@ static vec2 compute_acceleration(system_t *system, planet_t planet, int32_t plan
     return vec2_mul(1 / planet.mass, f_res);
 }
 
-static vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
     vec2 velocity = compute_velocity(system, planet);
     vec2 acceleration = compute_acceleration(system, planet, planet_index);
     return vec2_add(vec2_add(planet.pos, vec2_mul(delta_t, velocity)), vec2_mul(pow(delta_t, 2) / 2, acceleration));
 }
 
-static vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
     vec2 acceleration = compute_acceleration(system, planet, planet_index);
     return vec2_add(vec2_sub(vec2_mul(2, planet.pos), planet.prec_pos), vec2_mul(pow(delta_t, 2), acceleration));
 }

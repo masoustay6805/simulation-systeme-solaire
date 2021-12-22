@@ -131,12 +131,59 @@
     \subsection{Réalisation de la simulation d'un système planétaire}\label{subsec:réalisation-de-la-simulation-d'un-système-planétaire}
 
     \subsubsection{Calcul de la vélocité d'une planète}
+
+    $\vec{v}_{p}(0) = \sqrt{\frac{GM * (1 + e_{p})}{a_{p}(1 - e_{p})} * \frac{\vec{r}_{p}}{\|\vec{r}_{p}\|}}$
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting3}]
+        vec2 compute_velocity(system_t *system, planet_t planet) {
+               return vec2_mul(
+           sqrt((G * system->star.mass * (1 + planet.eccentricity)) / (planet.semi_major_axis * (1 - planet.eccentricity))),
+           vec2_normalize(vec2_create(-planet.pos.y, -planet.pos.x))
+           );
+       }
+    \end{lstlisting}
     
     \subsubsection{Calcul de l'accélération d'une planète}
+
+    $\vec{F}_{B\to{}A} = G * \frac{m_{A}m_{B}}{\|\vec{r}_{AB}\|^{3}} * \vec{r}_{AB}$
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting4}]
+        vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
+    vec2 f_res = vec2_create_zero();
+    for (int32_t i = -1; i < system->nb_planets; i++) {
+        if (i != planet_index) {
+            planet_t planet_b = i == -1 ? system->star : system->planets[i];
+            vec2 rab = vec2_sub(planet_b.pos, planet.pos);
+            vec2 fab = vec2_mul(G * ((planet.mass * planet_b.mass) / pow(vec2_norm(rab), 3)), rab);
+            f_res = vec2_add(f_res, fab);
+        }
+    }
+    return vec2_mul(1 / planet.mass, f_res);
+}
+    \end{lstlisting}
     
     \subsubsection{Calcul de la position initial d'une planète}
+
+    $\vec{x}_{p}(\Delta{}t) = \vec{x}_{p}(0) + \Delta{}\vec{tv}_{p}(0) + \frac{(\Delta{}t)^{2}}{2} * \vec{a}_{p}$
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting5}]
+        vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+    vec2 velocity = compute_velocity(system, planet);
+    vec2 acceleration = compute_acceleration(system, planet, planet_index);
+    return vec2_add(vec2_add(planet.pos, vec2_mul(delta_t, velocity)), vec2_mul(pow(delta_t, 2) / 2, acceleration));
+    }
+    \end{lstlisting}
     
     \subsubsection{Mise à jour de la position d'une planète}
+
+    $\vec{x}_{p}(t + \Delta{}t) = \vec{x}_{p}(t) + \Delta{}\vec{tv}_{p}(t) + \frac{(\Delta{}t)^{2}}{2} * \vec{a}_{p}(t)$
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting6}]
+        vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+    vec2 acceleration = compute_acceleration(system, planet, planet_index);
+    return vec2_add(vec2_sub(vec2_mul(2, planet.pos), planet.prec_pos), vec2_mul(pow(delta_t, 2), acceleration));
+    }
+    \end{lstlisting}
 
     \subsubsection{Création d'une étoile(dans notre cas: le soleil)}
 
