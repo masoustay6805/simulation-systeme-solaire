@@ -33,5 +33,7 @@ vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_ind
 vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t);
 vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index);
 vec2 compute_velocity(system_t *system, planet_t planet);
+void create_planetes_from_csv(system_t *system);
+
 
 #endif

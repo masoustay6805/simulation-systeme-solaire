@@ -62,7 +62,7 @@ planet_t create_planet(double mass, int color, double radius, double semi_major_
     return planet;
 }
 
-static void create_planetes_from_csv(system_t *system) {
+void create_planetes_from_csv(system_t *system) {
     FILE *stream = fopen(PLANETES_CSV_PATH, "r");
     if (stream == NULL) {
         printf("%s not found !", PLANETES_CSV_PATH);
