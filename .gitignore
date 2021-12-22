@@ -58,6 +58,9 @@ dkms.conf
 
 # Latex
 out
+*.fls
+*.fdp_latexmk
+*.pdf
 *.aux
 *.lof
 *.log
