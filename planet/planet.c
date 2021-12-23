@@ -61,7 +61,7 @@ planet_t create_planet(double mass, int color, double radius, double semi_major_
     } //La planète est aligné horizontalement au soleil
     return planet;
 }
-
+// Saturn;568.32e27;1434e9;0.0565;2.25;0x00FFF2CC
 void create_planetes_from_csv(system_t *system) {
     FILE *stream = fopen(PLANETES_CSV_PATH, "r");
     if (stream == NULL) {
