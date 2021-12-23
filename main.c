@@ -7,10 +7,6 @@
 
 #define DELTA_T 15000 // Not working when dynamic
 
-// TODO Refactoring
-// TODO Add comments
-// TODO Do report
-
 int main()
 {
     struct gfx_context_t *ctxt =
