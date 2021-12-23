@@ -1,3 +1,10 @@
+/**
+ * @file main.c
+ * @authors Jules Stähli, David Rajohnson
+ * @date 2021-12-06
+ * @version 1.0.0
+ */
+
 #include "gfx/gfx.h"
 #include "vec2/vec2.h"
 #include "planet/planet.h"
@@ -21,7 +28,6 @@ int main()
 
     while (true)
     {
-        
         gfx_present(ctxt);
         update_system(&system, DELTA_T);
         gfx_clear(ctxt, COLOR_BLACK);

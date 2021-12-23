@@ -1,3 +1,10 @@
+/**
+ * @file planet.h
+ * @authors Jules Stähli, David Rajohnson
+ * @date 2021-12-06
+ * @version 1.0.0
+ */
+
 #ifndef _PLANET_H_
 #define _PLANET_H_
 

@@ -1,3 +1,10 @@
+/**
+ * @file planet.c
+ * @authors Jules Stähli, David Rajohnson
+ * @date 2021-12-06
+ * @version 1.0.0
+ */
+
 #include "planet.h"
 #include "../vec2/vec2.h"
 #include <stdlib.h>
