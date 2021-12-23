@@ -1,3 +1,0 @@
-# Rapport: système solaire
-
-## Introduction

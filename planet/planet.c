@@ -15,14 +15,14 @@
 #define PLANETES_CSV_SEPARATOR ";"
 #define PLANETES_CSV_ROW_MAX_LENGTH 1024
 
-static vec2 compute_velocity(system_t *system, planet_t planet) {
+vec2 compute_velocity(system_t *system, planet_t planet) {
     return vec2_mul(
             sqrt((G * system->star.mass * (1 + planet.eccentricity)) / (planet.semi_major_axis * (1 - planet.eccentricity))),
             vec2_normalize(vec2_create(-planet.pos.y, -planet.pos.x))
             );
 }
 
-static vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
+vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
     vec2 f_res = vec2_create_zero();
     for (int32_t i = -1; i < system->nb_planets; i++) {
         if (i != planet_index) {
@@ -35,34 +35,34 @@ static vec2 compute_acceleration(system_t *system, planet_t planet, int32_t plan
     return vec2_mul(1 / planet.mass, f_res);
 }
 
-static vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
     vec2 velocity = compute_velocity(system, planet);
     vec2 acceleration = compute_acceleration(system, planet, planet_index);
     return vec2_add(vec2_add(planet.pos, vec2_mul(delta_t, velocity)), vec2_mul(pow(delta_t, 2) / 2, acceleration));
 }
 
-static vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
     vec2 acceleration = compute_acceleration(system, planet, planet_index);
     return vec2_add(vec2_sub(vec2_mul(2, planet.pos), planet.prec_pos), vec2_mul(pow(delta_t, 2), acceleration));
 }
 
 planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
-    planet_t planet = {
+    planet_t planet = { //attribution de tous les paramètres
         .mass = mass,
         .color = color,
         .radius = radius,
         .semi_major_axis = semi_major_axis,
         .eccentricity = eccentricity,
     };
-    if (is_star) {
+    if (is_star) { //Si c'est une étoile on le place au milieu donc vecteur 0
         planet.prec_pos = planet.pos = vec2_create_zero();
-    } else {
+    } else { //Sinon on le place par rapport à sa distance au soleil(étoile) et son excentricité
         planet.prec_pos = planet.pos = vec2_create(semi_major_axis * (1 - eccentricity), 0);
-    }
+    } //La planète est aligné horizontalement au soleil
     return planet;
 }
-
-static void create_planetes_from_csv(system_t *system) {
+// Saturn;568.32e27;1434e9;0.0565;2.25;0x00FFF2CC
+void create_planetes_from_csv(system_t *system) {
     FILE *stream = fopen(PLANETES_CSV_PATH, "r");
     if (stream == NULL) {
         printf("%s not found !", PLANETES_CSV_PATH);

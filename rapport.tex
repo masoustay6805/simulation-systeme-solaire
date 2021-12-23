@@ -1,0 +1,388 @@
+\newif\ifCOR
+%\CORtrue
+
+\newif\ifIncludesEmbedded
+\IncludesEmbeddedtrue
+
+% Preamble
+\documentclass[a4paper,10pt]{article}
+
+% Packages
+\usepackage[francais]{babel} % Typographie
+\usepackage[T1]{fontenc}     % Saisie en
+\usepackage[utf8]{inputenc} % français
+\usepackage{arev}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+% Réglages généraux
+\usepackage[left=3.0cm, right=2.3cm, top=3cm, bottom=2.5cm]{geometry} % taille de la feuille
+\usepackage{fancyhdr} % Titre courant
+\usepackage{setspace} % Interligne
+\usepackage{lscape}   % Mode paysage
+\usepackage{multicol}  % Plusieurs colonnes
+\usepackage{placeins}
+\usepackage{caption}
+
+% Packages pour les tableaux
+\usepackage{array}     % Outils supplémentaires
+\usepackage{multirow}  % Colonnes multiples
+\usepackage{tabularx}  % Largeur totale donnée
+\usepackage{longtable} % sur plusieurs pages
+\usepackage{fancybox}
+
+% paquets mathématiques
+\usepackage{amsmath, amssymb, mathrsfs, theorem}
+\usepackage{wasysym} % symboles exotiques : \smiley...
+
+\usepackage{lastpage} % pour avoir \pageref{LastPage} : le nombre total de pages du doc
+\usepackage{verbatim} % for \begin{comment}
+\usepackage{fancyvrb}
+
+% Color scheme for listings
+\usepackage{textcomp}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+
+% Listings configuration
+\usepackage{listings}
+\lstset{
+    tabsize=4,
+    rulecolor=,
+    language=python,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={1.5\baselineskip},
+    columns=fixed,
+    numbers=left,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=shadowbox,
+    rulesepcolor=\color{black},
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    identifierstyle=\ttfamily,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color{red},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+    literate={á}{{\'a}}1 {ã}{{\~a}}1 {é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1,
+}
+
+% Other
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
+\graphicspath{{../images/}}
+\hypersetup{colorlinks=false}
+\hypersetup{pdfauthor=STAHLI Jules, pdfkeywords=stage}
+\hypersetup{pdfstartpage=1}
+\hypersetup{pdfpagemode=None} %FullScreen, None
+\hypersetup{pdfpagelayout=SinglePage} %SinglePage, OneColumn, TwoColumnLeft, TwoColumnRight
+
+\hypersetup{pdfstartview=Fit} %Fit, FitH, FitV, FitB, FitBH, FitBV
+
+% Commands
+\newcommand{\doctitle}{Rapport}
+\newcommand{\docsubtitle}{Simulation système solaire}
+\newcommand{\docauthor}{David Rajohnson, Jules Stähli}
+\newcommand{\docversion}{v2.0}
+\newcommand{\filename}{rapport.tex}
+\newcommand{\docdate}{21 décembre 2021}
+
+% Document info
+\title{\doctitle}
+\author{\docauthor}
+\date{\docdate}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\docauthor}
+\lhead{\doctitle~-~\docsubtitle}
+\rfoot{Page \thepage~sur~\pageref{LastPage}}
+\lfoot{\docdate~-~\docversion}
+
+\setlength\parindent{0pt} %noindent for all the document
+
+% Document
+\begin{document}
+    \begin{center}
+    {\huge \doctitle~-~\docsubtitle}\newline
+    \end{center}
+
+    \tableofcontents
+
+    \newpage
+
+    \section{Introduction}\label{sec:introduction}
+
+    Pour réaliser une simulation d'un système planétaire, plusieurs facteurs sont à prendre en compte.
+    Puisque dans notre univers, tous les corps sont soumis à des forces.
+    Nous allons donc utiliser pour cela les trois lois de Newton:
+
+    \begin{enumerate}
+        \item Si un corps est immobile (ou en mouvement rectiligne uniforme), alors la somme des forces qu’il subit, appelée force résultante, est nulle. ($\vec{F} = 0$).
+        \item La force résultante subit par un corps est égale à la masse de ce dernier multipliée par son accélération. ($\vec{F} = m * a$).
+        \item Si un corps A subit une force de la part d’un corps B, alors le corps B subit une force de réaction de sens opposé et de même intensité ($\vec{F}_{b\to{a}} = -\vec{F}_{a\to{b}}$).
+    \end{enumerate}
+    
+    \section{Réalisation de la simulation d'un système planétaire}\label{sec:réalisation-de-la-simulation-d'un-système-planétaire}
+
+    \subsection{Calcul de la vélocité d'une planète}\label{subsec:calcul-de-la-vélocité-d'une-planète}
+
+    $\vec{v}_{p}(0) = \sqrt{\frac{GM * (1 + e_{p})}{a_{p}(1 - e_{p})} * \frac{\vec{r}_{p}}{\|\vec{r}_{p}\|}}$\\
+
+    La fonction \textbf{compute\char`_velocity} est l'implémentation de la formule ci-dessus, elle permet de calculer la vélocité d'une planète. \\\\
+    La fonction prend en paramètre un système et une planète appartenant à ce système.\\
+    Elle retourne un vecteur correspondant à la vélocité de la planète.
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting3}]
+        vec2 compute_velocity(system_t *system, planet_t planet) {
+               return vec2_mul(
+           sqrt((G * system->star.mass * (1 + planet.eccentricity)) / (planet.semi_major_axis * (1 - planet.eccentricity))),
+           vec2_normalize(vec2_create(-planet.pos.y, -planet.pos.x))
+           );
+       }
+    \end{lstlisting}
+    
+    \subsection{Calcul de l'accélération d'une planète}\label{subsec:calcul-de-l'accélération-d'une-planète}
+
+    $\vec{F}_{B\to{}A} = G * \frac{m_{A}m_{B}}{\|\vec{r}_{AB}\|^{3}} * \vec{r}_{AB}$\\
+    
+    La fonction \textbf{compute\char`_acceleration} est l'inplémentation de la formule ci-dessus, elle permet de calculer l'accélération d'une planète à partir des forces qui s'appliquent sur celle-ci. \\\\
+    La fonction prend en paramètre un système, une planète et l'index de la planète dans la liste des planètes.\\
+    Elle retourne un vecteur correspondant à l'accélération de la planète.
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting4}]
+        vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
+            vec2 f_res = vec2_create_zero();
+            for (int32_t i = -1; i < system->nb_planets; i++) {
+                if (i != planet_index) {
+                    planet_t planet_b = i == -1 ? system->star : system->planets[i];
+                    vec2 rab = vec2_sub(planet_b.pos, planet.pos);
+                    vec2 fab = vec2_mul(G * ((planet.mass * planet_b.mass) / pow(vec2_norm(rab), 3)), rab);
+                    f_res = vec2_add(f_res, fab);
+                }
+            }
+            return vec2_mul(1 / planet.mass, f_res);
+        }
+    \end{lstlisting}
+    
+    \subsection{Calcul de la position initial d'une planète}\label{subsec:calcul-de-la-position-initial-d'une-planète}
+
+    $\vec{x}_{p}(\Delta{}t) = \vec{x}_{p}(0) + \Delta{}\vec{tv}_{p}(0) + \frac{(\Delta{}t)^{2}}{2} * \vec{a}_{p}$\\
+
+    La fonction \textbf{compute\char`_initial\char`_position} permet de calculer la position initiale d'une planète.\\\\
+    La fonction prend en paramètre un système, une planète, l'index de la planète dans la liste des planètes et $\Delta{}t$.\\
+    Elle retourne un vecteur correspondant à la position initiale de la planète.
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting5}]
+        vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+            vec2 velocity = compute_velocity(system, planet);
+            vec2 acceleration = compute_acceleration(system, planet, planet_index);
+            return vec2_add(vec2_add(planet.pos, vec2_mul(delta_t, velocity)), vec2_mul(pow(delta_t, 2) / 2, acceleration));
+        }
+    \end{lstlisting}
+
+    La fonction est appelée une seul fois pour chaque planète juste après leurs création pour ne pas fausser le calcul de l'accélération de chacune d'entre elle.\\\\
+    Elle permet de calculer la position d'une planète (\emph{pos}) à partir de sa position précédente (\emph{prec\char`_pos} égal à \emph{pos} à ce moment là), de sa vélocité calculée par la fonction \textbf{compute\char`_velocity} et de son accélération calculée par la fonction \textbf{compute\char`_acceleration}.
+    
+    \subsection{Mise à jour de la position d'une planète}\label{subsec:mise-à-jour-de-la-position-d'une-planète}
+
+    $\vec{x}_{p}(t + \Delta{}t) = \vec{x}_{p}(t) + \Delta{}\vec{tv}_{p}(t) + \frac{(\Delta{}t)^{2}}{2} * \vec{a}_{p}(t)$\\
+    
+    La fonction \textbf{compute\char`_next\char`_position} permet de calculer la prochaine position d'une planète.\\\\
+    La fonction prend en paramètre un système, une planète l'index de la planète dans la liste des planètes et $\Delta{}t$.\\
+    Elle retourne un vecteur correspondant à la nouvelle position de la planète.
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting6}]
+        vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
+            vec2 acceleration = compute_acceleration(system, planet, planet_index);
+            return vec2_add(vec2_sub(vec2_mul(2, planet.pos), planet.prec_pos), vec2_mul(pow(delta_t, 2), acceleration));
+        }
+    \end{lstlisting}
+
+    La fonction est appelée pour chaque planète juste avant de faire un rendu.
+
+    \subsection{Création d'une étoile(dans notre cas: le soleil)}\label{subsec:création-d'une-étoile(dans-notre-cas:-le-soleil)}
+
+    Le soleil sera représenté comme une planète donc aura la structure d'une planète mais son comportement sera différentes des autres planètes.
+    Pour ce faire, on a tout d'abord défini la structure d'une planète:
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting}]
+        typedef struct _planet {
+            double mass; //masse de la planète
+            int32_t color; //couleur sur la simulation
+            double radius; //Grandeur de la planète
+            double semi_major_axis; //Distance par rapport au soleil
+            double eccentricity; //excentricité
+            vec2 pos;      // x(t)
+            vec2 prec_pos; // x(t - dt)
+        } planet_t;
+    \end{lstlisting}
+
+    Comme convenu, pour la création de notre étoile nous avons donc eu besoin d'implémenter une fonction qui permet de créer les planètes.
+    Cette fonction contient également un champ qui permettra de préciser si cette planète créée est une étoile(\texttt{champ: is\char`_star}):
+    
+    \begin{lstlisting}[language=c,label={lst:lstlisting2}]
+        planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
+            planet_t planet = { //attribution de tous les paramètres
+                .mass = mass,
+                .color = color,
+                .radius = radius,
+                .semi_major_axis = semi_major_axis,
+                .eccentricity = eccentricity,
+            };
+
+            if (is_star) { //Si c'est une étoile on le place au milieu donc vecteur 0
+                planet.prec_pos = planet.pos = vec2_create_zero();
+            } else { //Sinon on la place par rapport à sa distance au soleil(étoile) et son excentricité
+                planet.prec_pos = planet.pos = vec2_create(semi_major_axis * (1 - eccentricity), 0);
+            } //La planète est aligné horizontalement au soleil
+            return planet;
+        }
+    \end{lstlisting}
+
+    \begin{description}
+        \item Au moment de la création de la planète dans le cas où il s'agit d'une étoile sa position par défaut est défini par le vecteur:
+        \item $\vec{P} = (0; 0^\circ)$
+        \item ou dans le cas contaire:
+        \item $\vec{P} = (sma * (1 - e); 0^\circ)$
+    \end{description}
+
+    \subsection{Ajout de planètes autour de étoile(Soleil}\label{subsec:ajout-de-planètes-autour-de-étoile(soleil}
+
+    Ici on a déjà la base pour créer chaque planète, donc on désire en créer chaque planète autour de l'étoile.
+    Pour cela nous avons décidé de créer les planètes à partir d'un fichier \emph{.csv} pour ne pas avoir à modifier tout le code à chaque création de planètes.
+    Notre fichier \emph{.csv} est composé comme ci-dessous:
+
+    \begin{figure}[H]
+        \begin{tabular}{| l | l | l | l | l | l |}
+            \hline
+            \textbf{Name} & \textbf{Mass} & \textbf{Semi major axis} & \textbf{Eccentricity} & \textbf{Radius} & \textbf{Color} \\
+            \hline\hline
+            Sun & 1.989e30 & 0 & 0 & 8 & 0x00FFFF00 \\
+            \hline
+            Mercury & 3.285e23 & 57.909e9 & 0.2056 & 0.5 & 0x0096764B \\
+            \hline
+            Venus & 4.867e24 & 108.209e9 & 0.0067 & 2 & 0x00BC611C \\
+            \hline
+            Earth & 5.972e24 & 149.596e9 & 0.0167 & 1 & 0x003A57D0 \\
+            \hline
+            Mars & 6.417e23 & 227.923e9 & 0.0935 & 1.5 & 0x00B9351A \\
+            \hline
+            Jupiter & 1.989e30 & 378.570e9 & 0.0489 & 2.5 & 0x00C27841 \\
+            \hline
+            Saturn & 568.32e27 & 1434e9 & 0.0565 & 2.25 & 0x00A3946B \\
+            \hline
+        \end{tabular}
+        \captionof{table}{Données~-~\emph{planetes.csv}}\label{fig:figure}
+    \end{figure}
+
+    Pour la démonstration on a modifier la grandeur de chaque planète et supprimer Saturne pour que chaque planète soit bien lisible.\\
+    La source des données est le site: \href{https://nssdc.gsfc.nasa.gov/planetary/factsheet/}{https://nssdc.gsfc.nasa.gov/planetary/factsheet/} \\\\
+    
+    Pour créer chaque planète à partir de ce tableau, on a créer une fonction qui permettra de récupérer chaque élément du tableau et l'attribuer dans le bon champs de la planète.\\\\\\\\
+    
+    
+    \subsection{Affichage du système}\label{subsec:affichage-du-système}
+
+    La fonction \textbf{show\char`_system} permet de dessiner le système au moment de chaque rendu.
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting8}]
+        void show_system(struct gfx_context_t *ctxt, system_t *system) {
+            double maximum_radius = 0;
+            double margin = 0.25;
+            for (int32_t i = 0; i < system->nb_planets; i++) {
+                if (system->planets[i].semi_major_axis > maximum_radius) {
+                    maximum_radius = system->planets[i].semi_major_axis;
+                }
+            }
+            maximum_radius *= (1 + margin);
+            for (int32_t i = -1; i < system->nb_planets; i++) {
+                    planet_t planet = i == -1 ? system->star : system->planets[i];
+                    coordinates coords = vec2_to_coordinates(vec2_mul(1.0 / maximum_radius, planet.pos), SCREEN_WIDTH, SCREEN_HEIGHT);
+                    draw_full_circle(ctxt, coords.column, coords.row, planet.radius, planet.color);
+            }
+        }
+    \end{lstlisting}
+
+    Pour que toutes les planètes puissent s'afficher correctement la taille du système est calculer en fonction de l'orbite de la planète la plus éloignée du système et en prenant en y ajoutant une marge.
+
+    \subsection{Lecture du fichier CSV}\label{subsec:lecture-du-fichier-csv}
+
+    La fonction qui nous permettra de lire le fichier \emph{.csv} commence tout d'abord par vérifier le nombre de lignes. On lit le document ligne par ligne, on aura pour chaque ligne les informations correspondant à chaque planète.
+    Et grâce au séparateur du fichier \emph{.csv} on prend les informations champs par champs pour créer chaque planètes avec les bons champs. \\\\Cela nous permettra dans notre cas de rajouter autant de planètes qu'on veut. Mais 
+    dépendant de la distance de la planète au soleil, l'affichage devra être adapté en conséquence. Par exemple si on rajoute saturne il va falloir diminuer la grandeur de chaque planète pour que toutes les planètes rentre dans la fenêtre 
+    d'affichage.
+    La fonction permettant cela est la suivante:
+
+    \begin{lstlisting}[language=c,label={lst:lstlisting7}]
+        void create_planetes_from_csv(system_t *system) {
+            FILE *stream = fopen(PLANETES_CSV_PATH, "r");
+            if (stream == NULL) {
+                printf("%s not found !", PLANETES_CSV_PATH);
+                exit(EXIT_FAILURE);
+            }
+            char line[PLANETES_CSV_ROW_MAX_LENGTH];
+            // Count csv lines
+            int32_t csv_nb_lines = 0;
+            while (fgets(line, PLANETES_CSV_ROW_MAX_LENGTH, stream)) {
+                csv_nb_lines++;
+            }
+            // Create system
+            int32_t nb_planetes = PLANETES_CSV_HEADERS ? csv_nb_lines - 2 : csv_nb_lines - 1;
+            system->planets = malloc(sizeof(planet_t) * nb_planetes);
+            system->nb_planets = nb_planetes;
+            // Reset stream
+            rewind(stream);
+            // Read csv line per line
+            int32_t line_index = PLANETES_CSV_HEADERS ? -1 : 0;
+            while (fgets(line, PLANETES_CSV_ROW_MAX_LENGTH, stream) && line_index - 1 < nb_planetes) {
+                // If line isn't headers
+                if (line_index > -1) {
+                    double mass = 0, radius = 0, semi_major_axis = 0, eccentricity = 0;
+                    int color = 0, field_index = 0;
+                    // Read each fields
+                    for (char *token = strtok(line, PLANETES_CSV_SEPARATOR); token != NULL; token = strtok(NULL, PLANETES_CSV_SEPARATOR), field_index++) {
+                        switch (field_index) {
+                            case 1:
+                                mass = atof(token);
+                                break;
+                            case 2:
+                                semi_major_axis = atof(token);
+                                break;
+                            case 3:
+                                eccentricity = atof(token);
+                                break;
+                            case 4:
+                                radius = atof(token);
+                                break;
+                            case 5:
+                                color = (int32_t)strtol(token, NULL, 0);
+                                break;
+                        }
+                    }
+                    // Create planet (or star)
+                    if (line_index == 0) {
+                        system->star = create_planet(mass, color, radius, semi_major_axis, eccentricity, true);
+                    } else {
+                        system->planets[line_index - 1] = create_planet(mass, color, radius, semi_major_axis, eccentricity, false);
+                    }
+                }
+                line_index++;
+            }
+            fclose(stream);
+        }
+    \end{lstlisting}
+
+    
+    \section{Ressouces}\label{sec:ressouces}
+    \begin{itemize}
+        \item \href{https://malaspinas.academy/phys/planets/enonce.html}{https://malaspinas.academy/phys/planets/enonce.html}
+        \item \href{https://nssdc.gsfc.nasa.gov/planetary/factsheet/}{https://nssdc.gsfc.nasa.gov/planetary/factsheet/}
+        \item \href{https://stackoverflow.com/questions/12911299/read-csv-file-in-c}{https://stackoverflow.com/questions/12911299/read-csv-file-in-c}
+    \end{itemize}
+\end{document}

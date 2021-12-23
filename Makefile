@@ -24,5 +24,8 @@ vec2.o: vec2.h
 
 gfx.o: gfx.h
 
+pdf: rapport.tex
+	pdflatex -file-line-error -interaction=nonstopmode -synctex=1 -output-format=pdf -output-directory=out rapport.tex
+
 clean:
 	rm -f *.o main tests

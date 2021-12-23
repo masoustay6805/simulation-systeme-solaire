@@ -55,3 +55,17 @@ Mkfile.old
 dkms.conf
 
 .idea
+
+# Latex
+out
+*.fls
+*.fdb_latexmk
+*.pdf
+*.aux
+*.lof
+*.log
+*.lol
+*.lot
+*.out
+*.gz
+*.toc
