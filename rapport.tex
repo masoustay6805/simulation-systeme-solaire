@@ -151,7 +151,7 @@
 
     $\vec{F}_{B\to{}A} = G * \frac{m_{A}m_{B}}{\|\vec{r}_{AB}\|^{3}} * \vec{r}_{AB}$\\
     
-    La fonction \textbf{compute\char`_acceleration} est l'inplémentation de la formule ci-dessus, elle permet de calculer l'accélération d'une planète à partir des forces qui s'appliquent sur celle-ci. \\\\
+    La fonction \textbf{compute\char`_acceleration} est l'implémentation de la formule ci-dessus, elle permet de calculer l'accélération d'une planète à partir des forces qui s'appliquent sur celle-ci. \\\\
     La fonction prend en paramètre un système, une planète et l'index de la planète dans la liste des planètes.\\
     Elle retourne un vecteur correspondant à l'accélération de la planète.
 
@@ -206,7 +206,7 @@
 
     La fonction est appelée pour chaque planète juste avant de faire un rendu.
 
-    \subsection{Création d'une étoile(dans notre cas: le soleil)}\label{subsec:création-d'une-étoile(dans-notre-cas:-le-soleil)}
+    \subsection{Création d'une étoile (dans notre cas: le soleil)}\label{subsec:création-d'une-étoile(dans-notre-cas:-le-soleil)}
 
     Le soleil sera représenté comme une planète donc aura la structure d'une planète mais son comportement sera différentes des autres planètes.
     Pour ce faire, on a tout d'abord défini la structure d'une planète:
@@ -224,7 +224,7 @@
     \end{lstlisting}
 
     Comme convenu, pour la création de notre étoile nous avons donc eu besoin d'implémenter une fonction qui permet de créer les planètes.
-    Cette fonction contient également un champ qui permettra de préciser si cette planète créée est une étoile(\texttt{champ: is\char`_star}):
+    Cette fonction contient également un champ qui permettra de préciser si cette planète créée est une étoile (\texttt{champ: is\char`_star}):
     
     \begin{lstlisting}[language=c,label={lst:lstlisting2}]
         planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
@@ -252,7 +252,7 @@
         \item $\vec{P} = (sma * (1 - e); 0^\circ)$
     \end{description}
 
-    \subsection{Ajout de planètes autour de étoile(Soleil}\label{subsec:ajout-de-planètes-autour-de-étoile(soleil}
+    \subsection{Ajout de planètes autour de l'étoile (Soleil)}\label{subsec:ajout-de-planètes-autour-de-étoile(soleil}
 
     Ici on a déjà la base pour créer chaque planète, donc on désire en créer chaque planète autour de l'étoile.
     Pour cela nous avons décidé de créer les planètes à partir d'un fichier \emph{.csv} pour ne pas avoir à modifier tout le code à chaque création de planètes.
@@ -281,10 +281,9 @@
         \captionof{table}{Données~-~\emph{planetes.csv}}\label{fig:figure}
     \end{figure}
 
-    Pour la démonstration on a modifier la grandeur de chaque planète et supprimer Saturne pour que chaque planète soit bien lisible.\\
     La source des données est le site: \href{https://nssdc.gsfc.nasa.gov/planetary/factsheet/}{https://nssdc.gsfc.nasa.gov/planetary/factsheet/} \\\\
     
-    Pour créer chaque planète à partir de ce tableau, on a créer une fonction qui permettra de récupérer chaque élément du tableau et l'attribuer dans le bon champs de la planète.\\\\\\\\
+    Pour créer chaque planète à partir de ce fichier, on a créer une fonction qui permettra de récupérer chaque élément du tableau et l'attribuer dans le bon champs de la planète.\\\\\\\\
     
     
     \subsection{Affichage du système}\label{subsec:affichage-du-système}
@@ -309,7 +308,7 @@
         }
     \end{lstlisting}
 
-    Pour que toutes les planètes puissent s'afficher correctement la taille du système est calculer en fonction de l'orbite de la planète la plus éloignée du système et en prenant en y ajoutant une marge.
+    Pour que toutes les planètes puissent s'afficher correctement la taille du système est calculer en fonction de l'orbite de la planète la plus éloignée du système et en y ajoutant une marge.
 
     \subsection{Lecture du fichier CSV}\label{subsec:lecture-du-fichier-csv}
 
