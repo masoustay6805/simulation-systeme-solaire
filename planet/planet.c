@@ -22,6 +22,12 @@
 #define PLANETES_CSV_SEPARATOR ";"
 #define PLANETES_CSV_ROW_MAX_LENGTH 1024
 
+/**
+ * Calcul de la vélocité d'une planète
+ * @param system Le système
+ * @param planet La planète dans le système
+ * @return Un vecteur (la vélocité)
+ */
 vec2 compute_velocity(system_t *system, planet_t planet) {
     return vec2_mul(
             sqrt((G * system->star.mass * (1 + planet.eccentricity)) / (planet.semi_major_axis * (1 - planet.eccentricity))),
@@ -29,6 +35,13 @@ vec2 compute_velocity(system_t *system, planet_t planet) {
             );
 }
 
+/**
+ * Calcul de l'accélération d'une planète
+ * @param system Un système
+ * @param planet Une planète dans le système
+ * @param planet_index L'index de la planète dans la liste des planètes
+ * @return Un vecteur (l'accélération)
+ */
 vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_index) {
     vec2 f_res = vec2_create_zero();
     for (int32_t i = -1; i < system->nb_planets; i++) {
@@ -42,17 +55,43 @@ vec2 compute_acceleration(system_t *system, planet_t planet, int32_t planet_inde
     return vec2_mul(1 / planet.mass, f_res);
 }
 
+/**
+ * Calcul de la position initiale d'une planète à partir de sa vélocité, son accélération et sa position précédente (valeur par défaut)
+ * @param system Un système
+ * @param planet Une planète dans le système
+ * @param planet_index L'index de la planète dans la liste des planètes
+ * @param delta_t Delta t
+ * @return Un vecteur (la position initiale)
+ */
 vec2 compute_initial_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
     vec2 velocity = compute_velocity(system, planet);
     vec2 acceleration = compute_acceleration(system, planet, planet_index);
     return vec2_add(vec2_add(planet.pos, vec2_mul(delta_t, velocity)), vec2_mul(pow(delta_t, 2) / 2, acceleration));
 }
 
+/**
+ * Calcul de la prochaine position d'une planète à partir de son accélération et sa position précédente
+ * @param system Un système
+ * @param planet Une planète dans le système
+ * @param planet_index L'index de la planète dans la liste des planètes
+ * @param delta_t Delta t
+ * @return Un vecteur (la prochaine position)
+ */
 vec2 compute_next_position(system_t *system, planet_t planet, int32_t planet_index, double delta_t) {
     vec2 acceleration = compute_acceleration(system, planet, planet_index);
     return vec2_add(vec2_sub(vec2_mul(2, planet.pos), planet.prec_pos), vec2_mul(pow(delta_t, 2), acceleration));
 }
 
+/**
+ * Création d'une nouvelle planète
+ * @param mass La masse de la planète
+ * @param color La couleur de la planète
+ * @param radius Le rayon de la planète
+ * @param semi_major_axis Le semi axe majeur de la planète
+ * @param eccentricity L'excentricité de la planète
+ * @param is_star La planète est une étoile ?
+ * @return La structure de la planète
+ */
 planet_t create_planet(double mass, int color, double radius, double semi_major_axis, double eccentricity, bool is_star) {
     planet_t planet = { //attribution de tous les paramètres
         .mass = mass,
@@ -68,7 +107,11 @@ planet_t create_planet(double mass, int color, double radius, double semi_major_
     } //La planète est aligné horizontalement au soleil
     return planet;
 }
-// Saturn;568.32e27;1434e9;0.0565;2.25;0x00FFF2CC
+
+/**
+ * Création des planètes d'un système à partir du fichier csv source
+ * @param system Un système
+ */
 void create_planetes_from_csv(system_t *system) {
     FILE *stream = fopen(PLANETES_CSV_PATH, "r");
     if (stream == NULL) {
@@ -96,6 +139,7 @@ void create_planetes_from_csv(system_t *system) {
             int color = 0, field_index = 0;
             // Read each fields
             for (char *token = strtok(line, PLANETES_CSV_SEPARATOR); token != NULL; token = strtok(NULL, PLANETES_CSV_SEPARATOR), field_index++) {
+                // store token value
                 switch (field_index) {
                     case 1:
                         mass = atof(token);
@@ -126,6 +170,11 @@ void create_planetes_from_csv(system_t *system) {
     fclose(stream);
 }
 
+/**
+ * Création d'un système
+ * @param delta_t Delta t
+ * @return Un système
+ */
 system_t create_system(double delta_t) {
     system_t system;
     create_planetes_from_csv(&system);
@@ -135,6 +184,11 @@ system_t create_system(double delta_t) {
     return system;
 }
 
+/**
+ * Affichage d'un système
+ * @param ctxt Un contexte pour dessiner
+ * @param system Un système
+ */
 void show_system(struct gfx_context_t *ctxt, system_t *system) {
     double maximum_radius = 0;
     double margin = 0.25;
@@ -151,6 +205,11 @@ void show_system(struct gfx_context_t *ctxt, system_t *system) {
     }
 }
 
+/**
+ * Mise à jour de la position des planètes d'un système
+ * @param system Un système
+ * @param delta_t Delta t
+ */
 void update_system(system_t *system, double delta_t) {
     for (int32_t i = 0; i < system->nb_planets; i++) {
         vec2 current_position = system->planets[i].pos;
@@ -159,6 +218,10 @@ void update_system(system_t *system, double delta_t) {
     }
 }
 
+/**
+ * Libération de la mémoire d'un système
+ * @param system Un système
+ */
 void free_system(system_t *system) {
     free(system->planets);
 }
